@@ -2,7 +2,31 @@
 
 import sys
 import cgi
+import sqlite3
 
+# enable displaying debug information in html
+# cosider commenting this out for deployment
+cgitb.enabe()
+
+# connect to the DB
+db = sqlite3.connect('../db/spabLocations.db')
+cursor = db.cursor()
+
+##############################
+# future students avoid SQL Injections
+# # Never do this -- insecure!
+# symbol = 'RHAT'
+# c.execute("SELECT * FROM stocks WHERE symbol = '%s'" % symbol)
+#
+# # Do this instead
+# t = ('RHAT',)
+# c.execute('SELECT * FROM stocks WHERE symbol=?', t)
+# print(c.fetchone())
+###############################
+
+cursor.execute("SELECT * FROM Locations WHERE id=1")
+
+#### Render the webpage in html ###
 # setup the html
 print "Content-type: text/html"
 print
@@ -22,6 +46,12 @@ integrity="sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh
 </head>
 """
 
+print"""
+<script type="text/javascript">
+
+</script>
+"""
+
 # setup where the map will go
 print """
 <body>
@@ -34,6 +64,8 @@ print "<p> Args</p>"
 arguments = cgi.FieldStorage()
 for key in arguments.keys():
 	print key + ":" + arguments[key].value + "<br>"
+
+print cursor.fetchone()
 
 print """
 <script type="text/javascript" src="../js/map.js"></script>
