@@ -8,7 +8,7 @@ import cgitb
 cgitb.enable()
 
 # open the db
-db = sqlite3.connect('../../db/spabLocation.db')
+db = sqlite3.connect('../db/spabLocation.db')
 cursor = db.cursor()
 
 ##############################
