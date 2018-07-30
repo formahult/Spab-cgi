@@ -6,10 +6,10 @@ import cgitb
 
 # enable displaying debug information in html
 # cosider commenting this out for deployment
-# cgitb.enable()
+cgitb.enable()
 
 # connect to the DB
-db = sqlite3.connect('../db/spabLocation.db')
+db = sqlite3.connect('db/spabLocation.db')
 cursor = db.cursor()
 
 ##############################
@@ -23,11 +23,6 @@ cursor = db.cursor()
 # c.execute('SELECT * FROM stocks WHERE symbol=?', t)
 # print(c.fetchone())
 ###############################
-
-try:
-    cursor.execute("SELECT * FROM Locations")
-except:
-    print "<h1>Couldn't open DB</h1>"
 
 #### Render the webpage in html ###
 # setup the html
@@ -49,18 +44,39 @@ integrity="sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh
 </head>
 """
 
+arguments = cgi.FieldStorage()
+
+try:
+    limit = arguments["limit"].value
+    limit = (limit,)
+except:
+    # if no limit specified, return everything the boat never sailed before 2018
+    limit = ('2017-01-01 12:00:00',)
+
+try:
+    cursor.execute("SELECT * FROM Locations WHERE Timestamp>=?", limit)
+except:
+    print "<h1>DB Execution Error</h1>"
+
 # setup where the map will go
 print """
 <body>
 
-<h3>Solar Powered Boat</h3>
-<div style="height: 360px; width: 720;" id="mapid"></div>
+<h1>Solar Powered Boat</h1>
+<div style="height: 720px; width: 1440;" id="mapid"></div>
 """
 
-row = cursor.fetchone()
+# form for setting date limit
+print """
+<form>
+<h2>Show after date:</h2>
+<input type="text" name="limit">
+<input type="submit">
+</form>
+"""
 
 print """
-<script type="text/javascript" src="../js/map.js"></script>
+<script type="text/javascript" src="js/map.js"></script>
 """
 
 print """
@@ -69,6 +85,7 @@ print """
 row = cursor.fetchone()
 while row is not None:
     print "var marker = L.marker([" + str(row[2]) + "," + str(row[3]) + "]).addTo(mymap);"
+    print 'marker.bindPopup("' + str(row[1]) + '")'
     row = cursor.fetchone()
 
 print "</script>"
