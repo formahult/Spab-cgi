@@ -59,6 +59,7 @@ try:
             values = (1, arguments['command'].value, str(arguments['lat'].value) + ',' + str(arguments['long'].value))
             cursor.execute("INSERT INTO Commands (Active, Command, Arguments) VALUES (?, ?, ?)", values)
         db.commit()
+        print "<h2>Command Saved</h2>"
     else:
         print "<h2>Error Parsing Commands</h2>"
 except KeyError:
