@@ -16,3 +16,10 @@ CREATE TABLE Waypoints(
 	Latitude REAL NOT NULL,
 	Longitude REAL NOT NULL
 );
+
+CREATE TABLE Commands(
+	ID INTEGER PRIMARY KEY NOT NULL,
+	Active BOOLEAN NOT NULL,
+	Command TEXT NOT NULL,
+	Arguments TEXT
+);

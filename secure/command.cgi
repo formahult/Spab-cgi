@@ -42,6 +42,26 @@ print """
 print """
 <body>
 <h1>SPAB Commander</h1>
+"""
+
+arguments = cgi.FieldStorage()
+validCommands = ('hold', 'goto')
+
+if arguments['command'] in validCommands:
+    # un set old command
+    cursor.execute("UPDATE Comamnds SET Active=0 WHERE Active=1")
+    # set new command
+    if arguments['command'] == 'hold':
+        values = (1,arguments['command'])
+        cursor.execute("INSERT INTO Commands (Active, Command) VALUES (?, ?)", values)
+    else if arguments['command'] == 'goto'
+        values = (1,arguments['command'], str(arguments['lat']) + ',' + str(arguments['long']))
+        cursor.execute("INSERT INTO Commands (Active, Command, Arguments) VALUES (?, ?, ?)", values)
+    db.commit()
+else:
+    print "<h2>Error Parsing Commands</h2>"
+
+print """
 <h2>Current Status</h2>
 At Time:
 <h3>Waypoints</h3>
@@ -62,6 +82,7 @@ Waypoint: <input type="text" name="index"><br>
 <input type="text" name="course"><br>
 </fieldset>
 
+<!--
 <fieldset>
 <legend>Configuration:</legend>
 <input type="radio" name="command" value="newway">New Waypoint:
@@ -71,6 +92,7 @@ Longitude: <input type="text" name="long"><br>
 <input type="radio" name="command" value="delway">Delete Waypoint:
 Index: <input type="text" name="index"><br>
 </fieldset>
+-->
 
 <input type="submit" value="Submit">
 </form>
