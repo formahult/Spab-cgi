@@ -47,19 +47,22 @@ print """
 arguments = cgi.FieldStorage()
 validCommands = ('hold', 'goto')
 
-if arguments['command'] in validCommands:
-    # un set old command
-    cursor.execute("UPDATE Comamnds SET Active=0 WHERE Active=1")
-    # set new command
-    if arguments['command'] == 'hold':
-        values = (1,arguments['command'])
-        cursor.execute("INSERT INTO Commands (Active, Command) VALUES (?, ?)", values)
-    else if arguments['command'] == 'goto'
-        values = (1,arguments['command'], str(arguments['lat']) + ',' + str(arguments['long']))
-        cursor.execute("INSERT INTO Commands (Active, Command, Arguments) VALUES (?, ?, ?)", values)
-    db.commit()
-else:
-    print "<h2>Error Parsing Commands</h2>"
+try:
+    if arguments['command'].value in validCommands:
+        # un set old command
+        cursor.execute("UPDATE Commands SET Active=0 WHERE Active=1")
+        # set new command
+        if arguments['command'].value == 'hold':
+            values = (1, arguments['command'].value)
+            cursor.execute("INSERT INTO Commands (Active, Command) VALUES (?, ?)", values)
+        elif arguments['command'].value == 'goto':
+            values = (1, arguments['command'].value, str(arguments['lat'].value) + ',' + str(arguments['long'].value))
+            cursor.execute("INSERT INTO Commands (Active, Command, Arguments) VALUES (?, ?, ?)", values)
+        db.commit()
+    else:
+        print "<h2>Error Parsing Commands</h2>"
+except KeyError:
+    pass
 
 print """
 <h2>Current Status</h2>
