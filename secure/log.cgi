@@ -3,6 +3,7 @@ import sys
 import cgi
 import sqlite3
 import cgitb
+import math
 ## enable displaying debug information in html
 # cosider commenting this out for deployment
 cgitb.enable()
@@ -50,15 +51,18 @@ try:
     lines = filter(None,lines)
     #print lines
     for line in lines:
-        values = tuple(line.split(','))
+        data = tuple(line.split(','))
+        latitude = (data[1]*180/math.pi)*math.pow(10,-7)
+        longitude = (data[2]*180/math.pi)*math.pow(10,-7)
+        values = (data[0], latitude, longitude)
         #print str(values)
         cursor.execute("INSERT INTO Locations (Timestamp, Latitude, Longitude) VALUES (?, ?, ?)", values)
     db.commit()
-    print"Success"
+    print"Log:Success"
 except KeyError:
-    print"Key Error"
+    print"Log:Key Error"
 except:
-    print"Some Error"
+    print"Log:Some Error"
 
 db.close()
 print """
