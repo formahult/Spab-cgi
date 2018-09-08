@@ -29,20 +29,6 @@ cursor = db.cursor()
 print "Content-type: text/html"
 print
 
-# header block
-print """
-<meta charset="UTF-8">
-<html>
-<head>
-<title>Solar Powered Autonomous Boat</title>
-
-</head>
-"""
-
-print """
-<body>
-
-"""
 arguments = cgi.FieldStorage()
 
 try:
@@ -65,7 +51,3 @@ except:
     print"Log:Some Error"
 
 db.close()
-print """
-</body>
-</html>
-"""
