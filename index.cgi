@@ -85,7 +85,7 @@ print """
 row = cursor.fetchone()
 while row is not None:
     print "var marker = L.marker([" + str(row[2]) + "," + str(row[3]) + "]).addTo(mymap);"
-    print 'marker.bindPopup("' + str(row[1]) + '");'
+    print 'marker.bindPopup("' + str(row[1]) + ":" + str(row[2]) + "," + str(row[3]) + '");'
     row = cursor.fetchone()
 
 print "</script>"
