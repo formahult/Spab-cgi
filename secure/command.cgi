@@ -3,13 +3,12 @@ import sys
 import cgi
 import sqlite3
 import cgitb
-#import cgitb
 ## enable displaying debug information in html
 # cosider commenting this out for deployment
 cgitb.enable()
 
 # open the db
-db = sqlite3.connect('../db/spabLocation.db')
+db = sqlite3.connect('db/spabLocation.db')
 cursor = db.cursor()
 
 ##############################
@@ -45,7 +44,7 @@ print """
 """
 
 arguments = cgi.FieldStorage()
-validCommands = ('hold', 'goto')
+validCommands = ('hold', 'moveto')
 
 try:
     if arguments['command'].value in validCommands:
@@ -55,9 +54,9 @@ try:
         if arguments['command'].value == 'hold':
             values = (1, arguments['command'].value)
             cursor.execute("INSERT INTO Commands (Active, Command) VALUES (?, ?)", values)
-        elif arguments['command'].value == 'goto':
-            values = (1, arguments['command'].value, str(arguments['lat'].value) + ',' + str(arguments['long'].value))
-            cursor.execute("INSERT INTO Commands (Active, Command, Arguments) VALUES (?, ?, ?)", values)
+        elif arguments['command'].value == 'moveto':
+            values = (1, str(arguments['command'].value), float(arguments['lat'].value),float(arguments['long'].value))
+            cursor.execute("INSERT INTO Commands (Active, Command, Latitude, Longitude) VALUES (?, ?, ?, ?)", values)
         db.commit()
         print "<h2>Command Saved</h2>"
     else:
@@ -72,31 +71,15 @@ At Time:
 <h3>Battery Voltage</h3>
 <h3>Leaks</h3>
 <h2>Queue Command</h2>
-<p>Choose one of the following commands to queue. Commands in the same set will overide previous commands of the same set.</p>
+<p>Choose one of the following commands to queue. Commands in the same set will overide previous
+commands of the same set.</p>
 <form action="./command.cgi" method="post" accept-charset="utf-8" autocomplete="off">
 <fieldset>
 <legend>Navigation:</legend>
-<input type="radio" name="command" value="goto">Go To:
+<input type="radio" name="command" value="moveto">Go To:
 Latitude: <input type="text" name ="lat">
 Longitude: <input type="text" name="long"><br>
-<input type="radio" name="command" value="goway">Go To
-Waypoint: <input type="text" name="index"><br>
-<input type="radio" name="command" value="hold">Hold Position<br>
-<input type="radio" name="command" value="course">Set Course:
-<input type="text" name="course"><br>
 </fieldset>
-
-<!--
-<fieldset>
-<legend>Configuration:</legend>
-<input type="radio" name="command" value="newway">New Waypoint:
-Index: <input type="text" name="index">
-Latitude: <input type="text" name ="lat">
-Longitude: <input type="text" name="long"><br>
-<input type="radio" name="command" value="delway">Delete Waypoint:
-Index: <input type="text" name="index"><br>
-</fieldset>
--->
 
 <input type="submit" value="Submit">
 </form>

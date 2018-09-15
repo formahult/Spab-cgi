@@ -3,16 +3,12 @@ import sys
 import cgi
 import sqlite3
 import cgitb
+import json
+import time
+import random
 ## enable displaying debug information in html
 # cosider commenting this out for deployment
 cgitb.enable()
-
-# open the db
-try:
-    db = sqlite3.connect('../db/spabLocation.db')
-    cursor = db.cursor()
-except:
-    print "Error,DB Connection"
 
 ##############################
 # future students avoid SQL Injections
@@ -27,21 +23,32 @@ except:
 ###############################
 
 # http header, must contain this in order to function.
-print "Content-type: text/html"
+print "Content-type: application/json"
 print
+
+# open the db
+try:
+    db = sqlite3.connect('db/spabLocation.db')
+    cursor = db.cursor()
+except Exception as e:
+    print('[{"type":"command"},{"action":"failure","message":"' + str(e) + '"}]')
 
 try:
     # Get the latest command only.
     cursor.execute("SELECT * FROM Commands ORDER BY ID DESC LIMIT 1;")
-except:
-    print "Error,DB Execution"
+except Exception as e:
+    print('[{"type":"command"},{"action":"failure","message":"' + str(e) + '"}]')
 
 try:
     row = cursor.fetchone()
     if row is not None:
-        s = 'Command,'
-        for elem in row[2:]:
-            s += str(elem) + ","
-        print s
-except:
-    print("Error,Generic")
+        timestamp = int((time.time() - 1420070400) * 100000) #spab wants times in us from 1/1/2015
+        ranint = random.randrange(10**80)
+        somehex = "%064x" % ranint
+        tid = somehex[0:9] + "-" + somehex[9:13] + "-" + somehex[13:17] + "-" + somehex[17:21] + "-" + somehex[21:33]
+        object = []
+        object.append({"type":"command"})
+        object.append({"action":str(row[2]), "timestamp":str(timestamp), "latitude":str(row[3]), "logitude":str(row[4]), "taskId":str(tid)})
+        print(json.dumps(object))
+except Exception as e:
+    print('[{"type":"command"},{"action":"failure","message":"' + str(e) + '"}]')
