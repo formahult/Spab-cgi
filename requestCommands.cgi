@@ -35,20 +35,22 @@ except Exception as e:
 
 try:
     # Get the latest command only.
-    cursor.execute("SELECT * FROM Commands ORDER BY ID DESC LIMIT 1;")
+    cursor.execute("SELECT * FROM Commands WHERE Active=1;")
 except Exception as e:
     print('[{"type":"command"},{"action":"failure","message":"' + str(e) + '"}]')
 
 try:
     row = cursor.fetchone()
-    if row is not None:
+    object = []
+    object.append({"type":"command"})
+    while row is not None:
         timestamp = int((time.time() - 1420070400) * 100000) #spab wants times in us from 1/1/2015
         ranint = random.randrange(10**80)
         somehex = "%064x" % ranint
         tid = somehex[0:9] + "-" + somehex[9:13] + "-" + somehex[13:17] + "-" + somehex[17:21] + "-" + somehex[21:33]
-        object = []
-        object.append({"type":"command"})
-        object.append({"action":str(row[2]), "timestamp":str(timestamp), "latitude":str(row[3]), "logitude":str(row[4]), "taskId":str(tid)})
-        print(json.dumps(object))
+        object.append({"action":str(row[2]), "timestamp":str(timestamp), "latitude":str(row[3]),
+"longitude":str(row[4]), "taskId":str(tid)})
+        row = cursor.fetchone()
+    print(json.dumps(object))
 except Exception as e:
     print('[{"type":"command"},{"action":"failure","message":"' + str(e) + '"}]')

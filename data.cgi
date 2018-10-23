@@ -31,12 +31,11 @@ print "Content-type: application/json\n\n"
 
 try:
     data = json.load(sys.stdin)
-    for elem in data:
-        timestamp = elem["timestamp"]/100000 + 1420070400
-        dateTime = datetime.datetime.fromtimestamp(timestamp)
-        dateString = dateTime.strftime('%Y-%m-%d %H:%M:%S')
-        values = (dateString, elem["latitude"], elem["longitude"])
-        cursor.execute("INSERT INTO Locations (Timestamp, Latitude, Longitude) VALUES (?, ?, ?)",
+    timestamp = data["timestamp"]/100000 + 1420070400
+    dateTime = datetime.datetime.fromtimestamp(timestamp)
+    dateString = dateTime.strftime('%Y-%m-%d %H:%M:%S')
+    values = (dateString, data["latitude"], data["longitude"])
+    cursor.execute("INSERT INTO Locations (Timestamp, Latitude, Longitude) VALUES (?, ?, ?)",
 values)
     db.commit()
     print('[{"type":"telemAck"},{"success":"true","message":"Inserted successfully"}]')

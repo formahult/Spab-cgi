@@ -51,7 +51,7 @@ try:
     limit = (limit,)
 except:
     # if no limit specified, return everything the boat never sailed before 2018
-    limit = ('2017-01-01 12:00:00',)
+    limit = ('2000-01-01 12:00:00',)
 
 try:
     cursor.execute("SELECT * FROM Locations WHERE Timestamp>=?", limit)
